@@ -35,6 +35,18 @@
     color: var(--text);
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Touch optimizations — eliminate 300ms tap delay + native button tweaks */
+  button, a, [onclick], .card, .top10-card, .channel-btn, .topnav-link, .bn-link, .filter-pill, .card-action, .icon-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255,77,126,0.15);
+  }
+  /* Smooth iOS momentum scrolling on horizontal rows */
+  .row-track, .filter-bar, .channels-pill, .catalog-row {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
   }
 
   /* ====================== LAYOUT ====================== */
@@ -224,29 +236,24 @@
 
   /* Channel switcher (pill, abaixo do topbar) */
   .channels-bar {
-    position: sticky;
-    top: 64px;
+    position: relative;
     z-index: 40;
     display: flex;
     justify-content: center;
-    padding: 14px 0 4px;
-    background: linear-gradient(180deg, rgba(7,5,10,0.92) 0%, rgba(7,5,10,0.7) 70%, transparent 100%);
-    backdrop-filter: blur(10px);
-    pointer-events: none;
+    padding: 14px 12px 4px;
   }
   .channels-pill {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: rgba(15,9,18,0.85);
+    background: rgba(15,9,18,0.92);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 100px;
     padding: 5px;
-    pointer-events: auto;
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     overflow-x: auto;
-    max-width: calc(100vw - 32px);
+    max-width: 100%;
     scrollbar-width: none;
   }
   .channels-pill::-webkit-scrollbar { display: none; }
@@ -515,7 +522,10 @@
   .hero-arrow .icon { width: 56px; height: 56px; stroke-width: 2; }
 
   @media (max-width: 768px) {
-    .row-arrow, .hero-arrow { display: none; }
+    .row-arrow, .hero-arrow {
+      display: none !important;
+      pointer-events: none;
+    }
   }
 
   .row-header {
@@ -1377,20 +1387,55 @@
   .settings-wrap { position: relative; }
 
   @media (max-width: 768px) {
-    .player-topbar { padding: 12px 14px; gap: 8px; }
+    .player-topbar { padding: 12px 12px; gap: 6px; }
+    .player-back { padding: 7px 12px 7px 8px; font-size: 0.78rem; }
+    .player-back .icon { width: 16px; height: 16px; }
     .player-title-block { display: none; }
+    /* Modos no topo abaixo do topbar pra ficarem visíveis e tocáveis */
     .player-modes {
-      top: auto; bottom: 90px; left: 50%; transform: translateX(-50%);
+      top: 64px; bottom: auto; left: 50%; transform: translateX(-50%);
       padding: 4px;
     }
-    .player-mode-btn { padding: 7px 12px; font-size: 0.78rem; }
-    .player-mode-btn span { display: none; }
-    .audiobook-stage { padding: 80px 20px 200px; }
-    .player-controls { padding: 50px 14px 14px; }
-    .controls-row { gap: 8px; font-size: 0.78rem; }
-    .time-display { min-width: 80px; font-size: 0.74rem; }
+    .player-mode-btn { padding: 8px 14px; font-size: 0.78rem; min-height: 36px; }
+    .player-mode-btn span { display: inline; }
+
+    /* Audiobook stage: scroll vertical interno + padding ajustado */
+    .audiobook-stage {
+      padding: 130px 16px 140px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      justify-content: flex-start;
+    }
+    .audio-cover { width: clamp(180px, 50vw, 260px); margin-bottom: 18px; }
+    .audio-cover-wrap { margin-bottom: 18px; }
+    .audio-narrator { font-size: 0.7rem; letter-spacing: 2px; }
+    .audio-title { font-size: 1.1rem; margin-bottom: 14px; line-height: 1.25; }
+    /* Idiomas: grid 2x2 pra caber no celular */
+    .lang-selector {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .lang-btn {
+      padding: 9px 14px;
+      font-size: 0.78rem;
+      min-height: 40px;
+      flex: 0 0 auto;
+    }
+
+    /* Controles bottom: compactos e tocáveis */
+    .player-controls { padding: 40px 12px 14px; }
+    .controls-row { gap: 6px; font-size: 0.74rem; flex-wrap: nowrap; }
+    .time-display { min-width: 70px; font-size: 0.7rem; }
     .ctrl-btn.skip, .ctrl-btn.volume { display: none; }
-    .lang-btn { padding: 7px 12px; font-size: 0.76rem; }
+    .ctrl-btn { padding: 8px; min-width: 36px; min-height: 36px; }
+    .progress-container { padding: 14px 0; }
+    .progress-bar { height: 5px; }
+
+    /* Big play overlay menor */
+    .play-overlay-btn { width: 72px; height: 72px; }
+    .play-overlay-btn svg { width: 32px; height: 32px; }
   }
 
   /* ====================== EBOOK MODAL (inline) ====================== */
@@ -1659,19 +1704,24 @@
     .ebook-page { width: 100%; height: 100%; border-radius: 0; }
     .ebook-page.cover { padding: 40px 24px; }
     .cover-title { font-size: 1.7rem; }
+    .cover-subtitle { font-size: 0.92rem; }
+    .start-btn { padding: 12px 24px; font-size: 0.86rem; min-height: 44px; }
     .ebook-page.content { flex-direction: column; }
-    .ebook-img { flex: 0 0 36%; }
-    .ebook-text { padding: 22px 20px; }
-    .ebook-title { font-size: 1.25rem; margin-bottom: 14px; }
-    .ebook-body { font-size: 0.94rem; }
+    .ebook-img { flex: 0 0 32%; min-height: 180px; }
+    .ebook-text { padding: 20px 18px; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .ebook-title { font-size: 1.2rem; margin-bottom: 12px; }
+    .ebook-body { font-size: 0.92rem; line-height: 1.65; }
     .ebook-body p:first-child::first-letter { font-size: 2.4rem; }
-    .ebook-nav-arrow { width: 40px; height: 40px; }
+    .ebook-nav-arrow { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
     .ebook-nav-arrow svg { width: 28px; height: 28px; }
     .ebook-nav-arrow.left { left: 4px; }
     .ebook-nav-arrow.right { right: 4px; }
     .ebook-topbar-title { display: none; }
-    .ebook-topbar { padding: 0 12px; }
+    .ebook-topbar { padding: 0 10px; }
+    .ebook-topbar .player-back { padding: 6px 12px 6px 8px; font-size: 0.78rem; }
     .ebook-page.final h2 { font-size: 1.6rem; }
+    .ebook-page.final p { font-size: 0.92rem; }
+    .ebook-progress-bar { padding: 0 14px; gap: 12px; font-size: 0.74rem; }
   }
 
   /* ====================== TABS ====================== */
@@ -1838,7 +1888,26 @@
     /* Cards smaller */
     .card { flex: 0 0 240px; }
     .card:hover { transform: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    /* Hover overlay desativado por padrão no mobile */
     .card-hover { display: none; }
+    /* Mas o card do Fazendeiro mostra os 3 botões fixos no canto pra ser tocável */
+    .card.story-fazendeiro .card-hover {
+      display: flex;
+      position: absolute;
+      top: auto; bottom: 0; left: 0; right: 0;
+      padding: 8px;
+      gap: 8px;
+      justify-content: center;
+      background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 70%, transparent 100%);
+      opacity: 1;
+      z-index: 5;
+    }
+    .card.story-fazendeiro .card-content { padding-bottom: 56px; }
+    .card.story-fazendeiro .card-action {
+      width: 38px; height: 38px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+    .card.story-fazendeiro .card-action svg { width: 16px; height: 16px; }
     .card-content { padding: 10px 12px 10px; }
     .card-title { font-size: 0.88rem; }
     .card-meta { font-size: 0.68rem; }
@@ -1904,8 +1973,14 @@
     /* App footer reposition */
     .app-footer { padding: 30px 20px 20px; font-size: 0.78rem; }
 
-    /* Tip */
-    .tip { left: 16px; right: 16px; bottom: 80px; max-width: none; }
+    /* Tip — esconder no mobile pra não bloquear cliques */
+    .tip { display: none !important; }
+
+    /* Garantir que rows não colapsem */
+    .row-track { min-height: 140px; }
+
+    /* Garantir que o conteúdo principal não fique sob a bottom-nav */
+    .app-footer { padding-bottom: 80px; }
 
     /* Touch tap targets */
     .card-action, .icon-btn, .modal-close, .filter-pill, .sidebar-link { min-height: 40px; }
@@ -2235,7 +2310,7 @@
         <a class="row-link">Ver tudo →</a>
       </div>
       <div class="row-track">
-        <div class="card story-fazendeiro" style="background-image:url('midia/capa-fazendeiro.png')" data-story="fazendeiro">
+        <div class="card story-fazendeiro" style="background-image:url('midia/capa-fazendeiro.png')" data-story="fazendeiro" onclick="openPlayer('fazendeiro','video')">
           <span class="card-badge new">Disponível</span>
           <div class="card-content">
             <div class="card-genre">Cowboy Romance · 18+</div>
