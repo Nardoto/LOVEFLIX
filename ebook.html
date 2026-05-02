@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>E-Book — He Had Never Touched Me</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-page: #1a1410;
+    --bg-paper: #f4ebde;
+    --bg-paper-dark: #2a1f18;
+    --ink: #2a1f18;
+    --ink-soft: #5c4d3e;
+    --ink-mute: #8a7866;
+    --accent: #c9577a;
+    --accent-deep: #8b3a55;
+    --gold: #b8945a;
+  }
+
+  body {
+    background: var(--bg-page);
+    font-family: 'Georgia', 'Iowan Old Style', 'Palatino Linotype', serif;
+    color: var(--ink);
+    overflow: hidden;
+    height: 100vh;
+    user-select: none;
+  }
+  body.dark-mode {
+    --bg-paper: #1f1812;
+    --ink: #e8dac7;
+    --ink-soft: #c2b29c;
+    --ink-mute: #8a7866;
+  }
+
+  /* ================== TOP BAR ================== */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(26,20,16,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 50;
+    color: #e8dac7;
+  }
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #c2b29c;
+    text-decoration: none;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+  }
+  .back-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  .topbar-title {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #e8dac7;
+    text-align: center;
+    flex: 1;
+  }
+  .topbar-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: #c2b29c;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ================== READER ================== */
+  .reader {
+    height: 100vh;
+    padding-top: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .pages-container {
+    width: 100%;
+    max-width: 1400px;
+    height: calc(100vh - 56px - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page {
+    position: absolute;
+    width: 90%;
+    max-width: 1100px;
+    height: 96%;
+    background: var(--bg-paper);
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s;
+    display: flex;
+    overflow: hidden;
+  }
+  .page.hidden { opacity: 0; transform: translateX(40px); pointer-events: none; }
+  .page.prev-out { opacity: 0; transform: translateX(-40px); pointer-events: none; }
+
+  /* Cover (first page) — full image */
+  .page.cover {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-size: cover;
+    background-position: center;
+    background-image: url('midia/capa-fazendeiro.png');
+    color: #fff;
+    padding: 60px 50px;
+    align-items: flex-start;
+  }
+  .page.cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.95) 100%);
+  }
+  .cover-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+  }
+  .cover-tag {
+    font-family: -apple-system, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .cover-title {
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.7);
+    font-style: italic;
+  }
+  .cover-subtitle {
+    font-family: Georgia, serif;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    opacity: 0.92;
+    max-width: 560px;
+    margin-bottom: 28px;
+  }
+  .cover-author {
+    font-family: -apple-system, sans-serif;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 28px;
+  }
+  .start-btn {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    font-family: -apple-system, sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .start-btn:hover { background: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(201,87,122,0.4); }
+
+  /* Content pages — image left, text right */
+  .page.content {
+    flex-direction: row;
+    color: var(--ink);
+  }
+  .page-image {
+    flex: 1.05;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    min-height: 100%;
+  }
+  .page-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 70%, rgba(0,0,0,0.15));
+  }
+  .page-text {
+    flex: 1;
+    padding: 60px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+    background: var(--bg-paper);
+    transition: background 0.3s;
+  }
+  .page-text::-webkit-scrollbar { width: 6px; }
+  .page-text::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+  .chapter-num {
+    font-family: -apple-system, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .chapter-title {
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 22px;
+    color: var(--ink);
+    font-style: italic;
+  }
+  .chapter-body {
+    font-family: 'Iowan Old Style', Georgia, serif;
+    font-size: 1.04rem;
+    line-height: 1.78;
+    color: var(--ink-soft);
+    text-align: justify;
+  }
+  .chapter-body p { margin-bottom: 16px; }
+  .chapter-body em { color: var(--accent); font-style: italic; }
+  .chapter-body p::first-letter { text-transform: uppercase; }
+  .chapter-body p:first-child::first-letter {
+    font-family: Georgia, serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent);
+    float: left;
+    line-height: 1;
+    padding: 6px 8px 0 0;
+    font-style: normal;
+  }
+  .chapter-divider {
+    text-align: center;
+    color: var(--ink-mute);
+    margin: 18px 0 20px;
+    font-size: 1.4rem;
+    letter-spacing: 12px;
+  }
+
+  /* Final page */
+  .page.final {
+    background: #1a1410;
+    color: #e8dac7;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .page.final h2 {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 2.2rem;
+    margin-bottom: 18px;
+    color: var(--accent);
+  }
+  .page.final p { font-size: 1.05rem; line-height: 1.7; max-width: 500px; margin-bottom: 28px; color: #c2b29c; }
+
+  /* ================== NAV ================== */
+  .nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 56px; height: 56px;
+    background: none;
+    border: none;
+    color: rgba(232,218,199,0.85);
+    cursor: pointer;
+    z-index: 40;
+    filter: drop-shadow(0 2px 12px rgba(0,0,0,0.95));
+    transition: color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-arrow:hover { color: var(--accent); transform: translateY(-50%) scale(1.15); }
+  .nav-arrow:disabled { opacity: 0.2; cursor: default; }
+  .nav-arrow:disabled:hover { transform: translateY(-50%); color: rgba(232,218,199,0.85); }
+  .nav-arrow.left { left: 16px; }
+  .nav-arrow.right { right: 16px; }
+  .nav-arrow svg { width: 44px; height: 44px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ================== PROGRESS ================== */
+  .progress-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(26,20,16,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    z-index: 30;
+    color: #c2b29c;
+    font-family: -apple-system, sans-serif;
+    font-size: 0.82rem;
+  }
+  .progress-track {
+    flex: 1;
+    max-width: 400px;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.4s;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .page-counter { min-width: 80px; text-align: center; font-variant-numeric: tabular-nums; }
+
+  /* ================== MOBILE ================== */
+  @media (max-width: 768px) {
+    .pages-container { height: calc(100vh - 56px - 56px); }
+    .page { width: 100%; height: 100%; border-radius: 0; }
+    .page.cover { padding: 40px 24px; }
+    .cover-title { font-size: 1.8rem; }
+    .cover-subtitle { font-size: 0.95rem; }
+    .page.content { flex-direction: column; }
+    .page-image { flex: 0 0 38%; }
+    .page-text { padding: 24px 22px; flex: 1; }
+    .chapter-title { font-size: 1.3rem; margin-bottom: 14px; }
+    .chapter-body { font-size: 0.94rem; line-height: 1.7; }
+    .chapter-body p:first-child::first-letter { font-size: 2.4rem; }
+    .nav-arrow { width: 40px; height: 40px; }
+    .nav-arrow svg { width: 28px; height: 28px; }
+    .nav-arrow.left { left: 4px; }
+    .nav-arrow.right { right: 4px; }
+    .progress-bar { height: 56px; padding: 0 16px; gap: 12px; }
+    .topbar-title { display: none; }
+    .topbar { padding: 0 12px; }
+    .page.final h2 { font-size: 1.5rem; }
+    .page.final p { font-size: 0.92rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='app.html'">
+    <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+    Voltar ao app
+  </button>
+  <div class="topbar-title"><em>He Had Never Touched Me</em></div>
+  <div class="topbar-actions">
+    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Alternar tema" title="Tema">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- READER -->
+<div class="reader">
+  <div class="pages-container" id="pages"></div>
+</div>
+
+<!-- NAV ARROWS -->
+<button class="nav-arrow left" id="prev" onclick="prevPage()" aria-label="Anterior">
+  <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+</button>
+<button class="nav-arrow right" id="next" onclick="nextPage()" aria-label="Próximo">
+  <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+</button>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <span class="page-counter" id="counter">1 / 12</span>
+  <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+  <span style="font-style: italic; opacity: 0.6; min-width: 80px;">e-book</span>
+</div>
+
+<script>
+  // ============== PAGES DATA ==============
+  const pages = [
+    { type: 'cover' },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-001.jpg',
+      chapter: 'Prólogo',
+      title: 'Aquele Dia na Cozinha',
+      body: `<p>From the very first moment she stepped onto that Texas ranch, he looked at her like a man already lost. He loved her — quietly, fiercely, painfully. He wanted her in ways that kept him awake every single night.</p>
+      <p>But he wouldn't touch her. Not once.</p>
+      <p>Because he was rough, calloused, made of hard work and harder edges, and he was terrified of breaking something so delicate. Every night she lay inches from a man burning alive beside her, fighting his own hands.</p>
+      <p>Until one quiet kitchen, one flickering lamp, one whispered word… and the fire he had been holding back for so long finally broke loose.</p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-002.jpg',
+      chapter: 'Capítulo 1',
+      title: 'Promised Land',
+      body: `<p>The dirt road seemed to stretch on forever, winding through golden grass that bent low under the heavy Texas wind. Inside the old pickup truck, Alyssa held the small bouquet of white wildflowers tight against her lap, her knuckles pale around the stems.</p>
+      <p>She had said yes when her uncle sat her down at the kitchen table and told her about a man named Dante Sullivan who owned a piece of land out west and needed a wife. She had said yes because there was nothing left for her in the small town she came from.</p>
+      <p>When the truck finally rolled to a stop in front of the weathered wooden house, Alyssa drew in a slow, trembling breath. <em>That was when she saw him.</em></p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-005.jpg',
+      chapter: 'Capítulo 2',
+      title: 'The Distance That Burns',
+      body: `<p>The days on the ranch had a rhythm of their own. Dante woke before the sun. By the time she made it to the kitchen, he was already gone — but there was always coffee, still warm, sitting on the table in a tin mug as if it were an apology written in steam.</p>
+      <p>He was attentive in ways no man had ever been attentive to her before. The squeaky hinge — fixed before she even mentioned it. The loose step on the porch — replaced overnight.</p>
+      <p><em>But he wouldn't touch her.</em> Not her hand. Not her shoulder. Not even when he passed her in the narrow hallway and had to turn his whole body sideways to avoid brushing against her dress.</p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-008.jpg',
+      chapter: 'Capítulo 3',
+      title: 'Looks That Touch',
+      body: `<p>The barn was bathed in golden light. It was that hour of the late afternoon when the sun hung low over the Texas plains, pouring its honey-colored glow through every wooden slat.</p>
+      <p>She didn't have to turn around to know he was there. She felt him — the way one feels a storm gathering on the horizon. His eyes moved over her like a hand that wasn't allowed to touch.</p>
+      <p>His hands lifted. They came so close to her waist she could feel the warmth of his palms before they ever touched her skin. <em>Almost. Almost.</em> They hovered a breath away, trembling slightly, as if held back by invisible chains.</p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-011.jpg',
+      chapter: 'Capítulo 4',
+      title: 'The First Provocation',
+      body: `<p>If he wouldn't come to her, then she would go to him. The thought arrived quietly, the way most dangerous thoughts do.</p>
+      <p>That afternoon, she chose carefully. The white dress. The light one. The cotton was thin and worn from many washes, soft as a whisper against her skin. She left her hair loose. She didn't put on shoes.</p>
+      <p>She picked up the watering can from the porch and walked outside, pretending the world had not just tilted on its side. <em>She heard him before she saw him.</em></p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-014.jpg',
+      chapter: 'Capítulo 5',
+      title: 'Almost Losing Control',
+      body: `<p>The whole house was holding its breath. The sky outside had turned a deep purple — that particular shade Texas wears just before a storm.</p>
+      <p>Dante stood by the window, his back to her, his shoulders so tense they looked carved from stone. She could see his reflection in the dark glass: jaw clenched, eyes closed, hands gripping the wooden frame as if holding himself in place.</p>
+      <p>She stepped closer. He didn't turn. <em>"Don't," he said, voice cracked. "Don't push me, woman… or I won't be able to hold back."</em></p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-017.jpg',
+      chapter: 'Capítulo 6',
+      title: 'Fire Beneath the Skin',
+      body: `<p>The thunder rolled low across the plains. Rain began to fall — slow at first, then heavier, drumming against the roof of the ranch house in a rhythm that matched her racing heart.</p>
+      <p>He had ridden out into the storm, the way men do when they need to outrun themselves. When he came back, his shirt was soaked through, plastered to the hard muscle of his chest. His hair dripped water down the sharp line of his jaw.</p>
+      <p>She was waiting in the doorway. He stopped. <em>Their eyes met across the rain-soaked porch — and something inside the man finally cracked.</em></p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-020.jpg',
+      chapter: 'Capítulo 7',
+      title: 'The Night in the Kitchen',
+      body: `<p>It was deep into the night. The whole house was sleeping — except for the two people who couldn't.</p>
+      <p>Alyssa came down the stairs barefoot, the wooden steps cool beneath her feet. The flickering lamp on the kitchen table cast soft amber light over the room. He was already there. Standing. Waiting. As if he had known she would come.</p>
+      <p>He looked at her — really looked at her — and something inside him finally broke loose. Three steps. Three slow, deliberate steps across the kitchen floor. And then his hands were on her waist for the first time, and the world went completely still. <em>He whispered her name like a prayer.</em></p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-023.jpg',
+      chapter: 'Capítulo 8',
+      title: 'Afraid of Hurting Her',
+      body: `<p>When Alyssa woke, the bed beside her was cold. <em>But her body remembered everything.</em></p>
+      <p>She found him on the porch. Sitting on the wooden step. His head bowed, elbows on his knees, hands clasped together as if he were praying — or as if he were afraid to look at her.</p>
+      <p>"I was afraid I'd hurt you," he said, voice rough as gravel. "All this time. That's why I — " She knelt down in front of him. Took his big, calloused hand in both of hers. <em>"You didn't hurt me, Dante. You loved me."</em></p>`
+    },
+    {
+      type: 'content',
+      img: 'midia/ebook/pag-025.jpg',
+      chapter: 'Capítulo 9',
+      title: 'Unafraid to Love',
+      body: `<p>The days that followed felt like a different life. Dante didn't sleep on the edge of the bed anymore. He slept curled around her, one big arm wrapped possessively across her waist.</p>
+      <p>Sometimes she would wake in the middle of the night to find his hand splayed wide across her stomach, holding her against him in the dark — like a man who couldn't even sleep without making sure she was still there.</p>
+      <p>He still picked wildflowers and left them on the kitchen table. But now, when she found them in the morning, he was sitting right there, watching her smile. <em>"Thank you," she'd whisper. He'd just shrug. "Must've been the wind, Mrs. Sullivan."</em></p>
+      <div class="chapter-divider">· · ·</div>`
+    },
+    {
+      type: 'final',
+      title: 'Fim',
+      message: `Esta foi a história de Alyssa e Dante. <br/>Há muito mais histórias como esta esperando por você no app.`
+    }
+  ];
+
+  // ============== RENDER ==============
+  let current = 0;
+  const container = document.getElementById('pages');
+
+  function renderPage(p, idx) {
+    const div = document.createElement('div');
+    div.className = 'page hidden ' + p.type;
+    div.dataset.idx = idx;
+
+    if (p.type === 'cover') {
+      div.innerHTML = `
+        <div class="cover-content">
+          <div class="cover-tag">Romance Adulto · 18+</div>
+          <h1 class="cover-title">He Had Never Touched Me, Until That Day in the Kitchen</h1>
+          <p class="cover-subtitle">She arrived at his Texas ranch as his bride — soft, hopeful, trembling. He met her with calloused hands, green eyes full of fire, and a silence she couldn't read.</p>
+          <div class="cover-author">RomanceFlix+ · Original</div>
+          <button class="start-btn" onclick="goTo(1)">Começar a leitura  →</button>
+        </div>`;
+    } else if (p.type === 'content') {
+      div.innerHTML = `
+        <div class="page-image" style="background-image:url('${p.img}')"></div>
+        <div class="page-text">
+          <div class="chapter-num">${p.chapter}</div>
+          <h2 class="chapter-title">${p.title}</h2>
+          <div class="chapter-body">${p.body}</div>
+        </div>`;
+    } else if (p.type === 'final') {
+      div.innerHTML = `
+        <h2>${p.title}</h2>
+        <p>${p.message}</p>
+        <button class="start-btn" onclick="window.location.href='app.html'">Voltar ao catálogo  →</button>`;
+    }
+    container.appendChild(div);
+  }
+  pages.forEach(renderPage);
+
+  function show(idx) {
+    document.querySelectorAll('.page').forEach((el, i) => {
+      if (i === idx) {
+        el.classList.remove('hidden', 'prev-out');
+      } else if (i < idx) {
+        el.classList.remove('hidden');
+        el.classList.add('prev-out');
+      } else {
+        el.classList.add('hidden');
+        el.classList.remove('prev-out');
+      }
+    });
+    document.getElementById('counter').textContent = `${idx + 1} / ${pages.length}`;
+    document.getElementById('progress').style.width = ((idx + 1) / pages.length * 100) + '%';
+    document.getElementById('prev').disabled = idx === 0;
+    document.getElementById('next').disabled = idx === pages.length - 1;
+    current = idx;
+  }
+  function nextPage() { if (current < pages.length - 1) show(current + 1); }
+  function prevPage() { if (current > 0) show(current - 1); }
+  function goTo(idx) { show(idx); }
+  show(0);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') prevPage();
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextPage(); }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > 50) { dx > 0 ? prevPage() : nextPage(); }
+  }, { passive: true });
+
+  // Dark mode
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('ebook-dark', document.body.classList.contains('dark-mode'));
+  }
+  if (localStorage.getItem('ebook-dark') === 'true') document.body.classList.add('dark-mode');
+</script>
+</body>
+</html>
