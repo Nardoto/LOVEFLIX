@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="refresh" content="0; url=app.html" />
+<title>RomanceFlix+ — carregando...</title>
+<style>
+  body {
+    margin: 0;
+    background: #07050a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .logo {
+    font-family: Georgia, serif;
+    font-size: 2rem;
+    font-weight: 900;
+    font-style: italic;
+    background: linear-gradient(135deg, #ff7ea0, #c9577a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: #d4af6f; -webkit-text-fill-color: #d4af6f; font-style: normal; font-weight: 300; }
+  .links { display: flex; gap: 14px; margin-top: 12px; }
+  .links a {
+    padding: 10px 22px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, #c9577a, #ff4d7e);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .links a.alt { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); }
+  .hint { color: #9b8a96; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+  <div class="logo">Romance<span>Flix+</span></div>
+  <div class="hint">Redirecionando para o app...</div>
+  <div class="links">
+    <a href="app.html">Entrar no App</a>
+    <a class="alt" href="romance.html">Ver Landing Page</a>
+  </div>
+  <script>
+    // Imediato para navegadores que ignoram meta refresh com 0s
+    location.replace('app.html');
+  </script>
+</body>
+</html>

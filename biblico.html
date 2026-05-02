@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Histórias Eternas+ — App de Streaming Bíblico</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #0a0a14;
+    --bg-card: #141425;
+    --bg-elevated: #1c1c33;
+    --gold: #d4a857;
+    --gold-bright: #f0c674;
+    --accent: #6b4ee6;
+    --text: #f5f5f7;
+    --text-dim: #a0a0b0;
+    --border: rgba(255,255,255,0.08);
+    --success: #4ade80;
+    --danger: #ef4444;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-deep);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ============== HEADER ============== */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,20,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    cursor: pointer;
+  }
+  .logo span { font-weight: 300; color: var(--gold); -webkit-text-fill-color: var(--gold); }
+  nav {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--gold); }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    color: var(--bg-deep);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212,168,87,0.3);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  @media (max-width: 768px) {
+    nav .nav-links { display: none; }
+  }
+
+  /* ============== HERO ============== */
+  .hero {
+    height: 100vh;
+    min-height: 700px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 6%;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(107,78,230,0.25), transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(212,168,87,0.18), transparent 50%),
+      linear-gradient(180deg, transparent 0%, var(--bg-deep) 100%);
+    z-index: 1;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(212,168,87,0.12);
+    border: 1px solid rgba(212,168,87,0.3);
+    border-radius: 100px;
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+  }
+  h1 .highlight {
+    background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 50%, #b8852a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.25rem;
+    color: var(--text-dim);
+    margin-bottom: 36px;
+    max-width: 580px;
+  }
+  .cta-group {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .btn-large {
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 56px;
+  }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+  }
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ============== SECTION COMMON ============== */
+  section {
+    padding: 100px 6%;
+    position: relative;
+  }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+  .section-subtitle {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    margin-bottom: 64px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ============== HOW IT WORKS ============== */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .step:hover {
+    transform: translateY(-6px);
+    border-color: rgba(212,168,87,0.4);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    color: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  .step h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .step p { color: var(--text-dim); font-size: 0.95rem; }
+
+  /* ============== CATALOG ============== */
+  .catalog-section { background: var(--bg-deep); }
+  .row-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    margin-top: 40px;
+  }
+  .catalog-row {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    scroll-snap-type: x mandatory;
+  }
+  .catalog-row::-webkit-scrollbar { height: 6px; }
+  .catalog-row::-webkit-scrollbar-track { background: transparent; }
+  .catalog-row::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 3px;
+  }
+  .video-card {
+    flex: 0 0 280px;
+    aspect-ratio: 2/3;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    scroll-snap-align: start;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--border);
+  }
+  .video-card:hover {
+    transform: scale(1.05);
+    z-index: 2;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  }
+  .video-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, transparent 50%, rgba(10,10,20,0.95) 100%);
+  }
+  .video-card-info {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    padding: 20px;
+    z-index: 2;
+  }
+  .video-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .video-card-meta {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .video-card-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    padding: 4px 10px;
+    background: rgba(212,168,87,0.95);
+    color: var(--bg-deep);
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 6px;
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .video-card-badge.exclusive {
+    background: linear-gradient(135deg, var(--accent), #8b6dff);
+    color: white;
+  }
+
+  .card-1 { background: linear-gradient(135deg, #2d1b4e, #6b4ee6, #1a0a2e); }
+  .card-2 { background: linear-gradient(135deg, #4e2d1b, #d4a857, #2e1a0a); }
+  .card-3 { background: linear-gradient(135deg, #1b3a4e, #4e9bd4, #0a1f2e); }
+  .card-4 { background: linear-gradient(135deg, #4e1b3a, #d44e9b, #2e0a1f); }
+  .card-5 { background: linear-gradient(135deg, #1b4e2d, #57d4a8, #0a2e1a); }
+  .card-6 { background: linear-gradient(135deg, #4e3a1b, #d4a857, #2e1f0a); }
+  .card-7 { background: linear-gradient(135deg, #2d1b4e, #b84ed4, #1a0a2e); }
+  .card-8 { background: linear-gradient(135deg, #4e1b1b, #d45757, #2e0a0a); }
+
+  /* ============== MOCKUPS ============== */
+  .mockups {
+    background: linear-gradient(180deg, var(--bg-deep), var(--bg-card));
+  }
+  .mockups-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .mockups-grid { grid-template-columns: 1fr; }
+  }
+  .mockups-text h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: 800;
+  }
+  .mockups-text ul { list-style: none; }
+  .mockups-text li {
+    padding: 14px 0;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .check {
+    color: var(--gold);
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .phone-mockup {
+    width: 280px;
+    height: 580px;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 40px;
+    border: 8px solid #1a1a2e;
+    padding: 8px;
+    position: relative;
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.6),
+      0 0 0 2px rgba(212,168,87,0.1),
+      inset 0 0 20px rgba(212,168,87,0.05);
+  }
+  .phone-screen {
+    width: 100%; height: 100%;
+    border-radius: 32px;
+    background: var(--bg-deep);
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 24px;
+    background: #000;
+    border-radius: 0 0 14px 14px;
+    z-index: 10;
+  }
+  .phone-content {
+    padding: 40px 16px 16px;
+    height: 100%;
+    overflow: hidden;
+  }
+  .phone-hero {
+    height: 200px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6b4ee6, #d4a857);
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phone-hero::after {
+    content: '🌟';
+    position: absolute;
+    bottom: 12px; left: 12px;
+    font-size: 2rem;
+  }
+  .phone-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .phone-thumb {
+    flex: 0 0 90px;
+    height: 130px;
+    border-radius: 8px;
+  }
+  .phone-row-title {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  /* ============== PRICING ============== */
+  .pricing {
+    background: var(--bg-deep);
+    position: relative;
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .pricing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .pricing-card.featured {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(212,168,87,0.08), var(--bg-card));
+    transform: scale(1.03);
+  }
+  .pricing-card:hover { transform: translateY(-8px); }
+  .pricing-card.featured:hover { transform: scale(1.03) translateY(-8px); }
+  .pricing-badge {
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    color: var(--bg-deep);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .plan-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .plan-desc {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+  }
+  .plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .plan-price .currency { font-size: 1.2rem; color: var(--text-dim); }
+  .plan-price .amount {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .plan-price .period { color: var(--text-dim); font-size: 0.95rem; }
+  .plan-features { list-style: none; margin-bottom: 28px; }
+  .plan-features li {
+    padding: 10px 0;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .plan-features li::before {
+    content: '✓';
+    color: var(--gold);
+    font-weight: 800;
+  }
+  .plan-features li.disabled {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+  .plan-features li.disabled::before {
+    content: '✕';
+    color: var(--danger);
+  }
+  .pricing-card .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* ============== COMPARE ============== */
+  .compare {
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-deep));
+  }
+  .compare-table {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--bg-elevated);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .compare-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    gap: 20px;
+  }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-row.header {
+    background: var(--bg-card);
+    font-weight: 700;
+  }
+  .compare-row.header .col-app { color: var(--gold); }
+  .compare-row.header .col-yt { color: var(--text-dim); }
+  .col-feature { color: var(--text); font-size: 0.95rem; }
+  .col-app, .col-yt { text-align: center; font-size: 0.95rem; }
+  .yes { color: var(--success); font-size: 1.3rem; font-weight: 700; }
+  .no { color: var(--danger); font-size: 1.3rem; font-weight: 700; }
+
+  @media (max-width: 700px) {
+    .compare-row { padding: 14px 16px; font-size: 0.85rem; gap: 8px; }
+  }
+
+  /* ============== ROADMAP ============== */
+  .roadmap { background: var(--bg-deep); }
+  .timeline { max-width: 900px; margin: 0 auto; position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 32px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--gold), transparent);
+  }
+  .timeline-item {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .timeline-dot {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    background: var(--bg-elevated);
+    border: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--gold);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+  .timeline-content {
+    background: var(--bg-card);
+    padding: 24px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    flex: 1;
+  }
+  .timeline-content h4 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: var(--gold);
+  }
+  .timeline-content p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+
+  /* ============== CTA FINAL ============== */
+  .cta-final {
+    background:
+      radial-gradient(circle at center, rgba(212,168,87,0.15), transparent 70%),
+      var(--bg-deep);
+    text-align: center;
+    padding: 120px 6%;
+  }
+  .cta-final h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+  .cta-final p {
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    margin-bottom: 36px;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ============== FOOTER ============== */
+  footer {
+    padding: 40px 6%;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  /* ============== MODAL ============== */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+  }
+  .modal h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: var(--gold);
+  }
+  .modal p {
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+  .modal-close {
+    background: var(--bg-elevated);
+    color: var(--text);
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Histórias <span>Eternas+</span></div>
+  <nav>
+    <div class="nav-links" style="display:flex; gap:28px;">
+      <a href="#como-funciona">Como Funciona</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#planos">Planos</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('Demonstração','Esta é uma apresentação visual da proposta. O app real será desenvolvido a partir desta aprovação.')">Quero Assinar</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Histórias bíblicas em primeira pessoa, como você nunca viu
+    </div>
+    <h1>O <span class="highlight">Netflix</span> das histórias mais poderosas da Bíblia.</h1>
+    <p>Personagens bíblicos confessam suas histórias diretamente para você. Conteúdo exclusivo, produção cinematográfica e novos episódios toda semana — fora do YouTube, sem propagandas.</p>
+    <div class="cta-group">
+      <button class="btn btn-primary btn-large" onclick="document.getElementById('planos').scrollIntoView({behavior:'smooth'})">Começar agora — 7 dias grátis</button>
+      <button class="btn btn-ghost btn-large" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Ver catálogo</button>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">+50</div>
+        <div class="stat-label">Histórias exclusivas</div>
+      </div>
+      <div>
+        <div class="stat-num">4K</div>
+        <div class="stat-label">Qualidade cinema</div>
+      </div>
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Sem anúncios</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <h2 class="section-title reveal">Como funciona</h2>
+  <p class="section-subtitle reveal">Um aplicativo dedicado, sem depender do YouTube. O assinante paga uma vez por mês e tem acesso ilimitado.</p>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <h3>Assina pelo site</h3>
+      <p>O usuário entra no nosso site, escolhe o plano e assina via Stripe — cartão, Pix ou boleto recorrente. Sem comissão da Apple ou Google.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <h3>Baixa o app</h3>
+      <p>Disponível na Play Store (Android) e App Store (iOS). Faz login com a conta criada no site e libera tudo automaticamente.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <h3>Assiste de qualquer lugar</h3>
+      <p>App, navegador, Smart TV ou Chromecast. Vídeos hospedados em CDN profissional (Bunny Stream / Mux), com qualidade 4K e proteção contra pirataria.</p>
+    </div>
+  </div>
+</section>
+
+<section id="catalogo" class="catalog-section">
+  <h2 class="section-title reveal">Catálogo de Histórias</h2>
+  <p class="section-subtitle reveal">Personagens bíblicos como você nunca ouviu — em primeira pessoa, com produção cinematográfica.</p>
+
+  <div style="max-width:1400px; margin:0 auto;">
+
+    <h3 class="row-title reveal">🔥 Em Destaque</h3>
+    <div class="catalog-row reveal">
+      <div class="video-card card-1" onclick="openVideo('A Confissão de Caim')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">A Confissão de Caim</div>
+          <div class="video-card-meta">Episódio 1 · 14 min</div>
+        </div>
+      </div>
+      <div class="video-card card-2" onclick="openVideo('Davi: O Rei Quebrado')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Davi: O Rei Quebrado</div>
+          <div class="video-card-meta">Episódio 1 · 18 min</div>
+        </div>
+      </div>
+      <div class="video-card card-3" onclick="openVideo('Jonas no Ventre')">
+        <span class="video-card-badge">Novo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Jonas no Ventre</div>
+          <div class="video-card-meta">Episódio 1 · 12 min</div>
+        </div>
+      </div>
+      <div class="video-card card-4" onclick="openVideo('Maria Madalena')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Maria Madalena</div>
+          <div class="video-card-meta">Episódio 1 · 16 min</div>
+        </div>
+      </div>
+      <div class="video-card card-5" onclick="openVideo('Judas: A Última Noite')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Judas: A Última Noite</div>
+          <div class="video-card-meta">Episódio 1 · 22 min</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="row-title reveal">📖 Antigo Testamento</h3>
+    <div class="catalog-row reveal">
+      <div class="video-card card-6" onclick="openVideo('Moisés no Deserto')">
+        <div class="video-card-info">
+          <div class="video-card-title">Moisés no Deserto</div>
+          <div class="video-card-meta">Série · 8 episódios</div>
+        </div>
+      </div>
+      <div class="video-card card-7" onclick="openVideo('Sansão e Dalila')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Sansão e Dalila</div>
+          <div class="video-card-meta">Episódio 1 · 19 min</div>
+        </div>
+      </div>
+      <div class="video-card card-8" onclick="openVideo('Abraão: O Sacrifício')">
+        <div class="video-card-info">
+          <div class="video-card-title">Abraão: O Sacrifício</div>
+          <div class="video-card-meta">Episódio 1 · 15 min</div>
+        </div>
+      </div>
+      <div class="video-card card-1" onclick="openVideo('Salomão: O Sábio')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Salomão: O Sábio</div>
+          <div class="video-card-meta">Episódio 1 · 17 min</div>
+        </div>
+      </div>
+      <div class="video-card card-3" onclick="openVideo('Ester: A Rainha')">
+        <div class="video-card-info">
+          <div class="video-card-title">Ester: A Rainha</div>
+          <div class="video-card-meta">Episódio 1 · 14 min</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="row-title reveal">✝️ Novo Testamento</h3>
+    <div class="catalog-row reveal">
+      <div class="video-card card-2" onclick="openVideo('Pedro: O Que Negou')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Pedro: O Que Negou</div>
+          <div class="video-card-meta">Episódio 1 · 18 min</div>
+        </div>
+      </div>
+      <div class="video-card card-5" onclick="openVideo('Paulo de Tarso')">
+        <div class="video-card-info">
+          <div class="video-card-title">Paulo de Tarso</div>
+          <div class="video-card-meta">Série · 6 episódios</div>
+        </div>
+      </div>
+      <div class="video-card card-4" onclick="openVideo('Lázaro Voltou')">
+        <span class="video-card-badge">Novo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">Lázaro Voltou</div>
+          <div class="video-card-meta">Episódio 1 · 13 min</div>
+        </div>
+      </div>
+      <div class="video-card card-6" onclick="openVideo('O Centurião Romano')">
+        <span class="video-card-badge exclusive">Exclusivo</span>
+        <div class="video-card-info">
+          <div class="video-card-title">O Centurião Romano</div>
+          <div class="video-card-meta">Episódio 1 · 16 min</div>
+        </div>
+      </div>
+      <div class="video-card card-7" onclick="openVideo('A Mulher Samaritana')">
+        <div class="video-card-info">
+          <div class="video-card-title">A Mulher Samaritana</div>
+          <div class="video-card-meta">Episódio 1 · 12 min</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="mockups">
+  <div class="mockups-grid">
+    <div class="reveal">
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-content">
+            <div class="phone-hero"></div>
+            <div class="phone-row-title">Em Destaque</div>
+            <div class="phone-row">
+              <div class="phone-thumb card-1"></div>
+              <div class="phone-thumb card-2"></div>
+              <div class="phone-thumb card-3"></div>
+            </div>
+            <div class="phone-row-title">Novos</div>
+            <div class="phone-row">
+              <div class="phone-thumb card-4"></div>
+              <div class="phone-thumb card-5"></div>
+              <div class="phone-thumb card-6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mockups-text reveal">
+      <h3>Disponível em todo lugar</h3>
+      <p style="color:var(--text-dim); margin-bottom:24px;">Um único pagamento dá acesso ao app Android, iOS e ao site. Histórias sincronizadas: começa no celular, termina na TV.</p>
+      <ul>
+        <li><span class="check">✓</span> App Android nativo (Play Store)</li>
+        <li><span class="check">✓</span> App iOS nativo (App Store)</li>
+        <li><span class="check">✓</span> Acesso completo via navegador</li>
+        <li><span class="check">✓</span> Chromecast e AirPlay para Smart TV</li>
+        <li><span class="check">✓</span> Download para assistir offline</li>
+        <li><span class="check">✓</span> Continue de onde parou em qualquer dispositivo</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="planos" class="pricing">
+  <h2 class="section-title reveal">Escolha seu plano</h2>
+  <p class="section-subtitle reveal">7 dias grátis em todos os planos. Cancele quando quiser, sem multa.</p>
+
+  <div class="pricing-grid">
+    <div class="pricing-card reveal">
+      <div class="plan-name">Mensal</div>
+      <div class="plan-desc">Para quem quer experimentar</div>
+      <div class="plan-price">
+        <span class="currency">R$</span>
+        <span class="amount">19</span>
+        <span class="period">,90/mês</span>
+      </div>
+      <ul class="plan-features">
+        <li>Acesso a todo o catálogo exclusivo</li>
+        <li>Qualidade 4K sem anúncios</li>
+        <li>App Android, iOS e web</li>
+        <li class="disabled">Download offline</li>
+        <li class="disabled">2 telas simultâneas</li>
+      </ul>
+      <button class="btn btn-ghost" onclick="openModal('Plano Mensal', 'Você selecionou o plano mensal de R$ 19,90. No app real, aqui inicia o checkout do Stripe.')">Começar agora</button>
+    </div>
+
+    <div class="pricing-card featured reveal">
+      <div class="pricing-badge">Mais Popular</div>
+      <div class="plan-name">Anual</div>
+      <div class="plan-desc">Economize 40% — 2 meses grátis</div>
+      <div class="plan-price">
+        <span class="currency">R$</span>
+        <span class="amount">12</span>
+        <span class="period">,90/mês</span>
+      </div>
+      <ul class="plan-features">
+        <li>Tudo do plano Mensal</li>
+        <li>Download offline (Android/iOS)</li>
+        <li>2 telas simultâneas</li>
+        <li>Acesso antecipado a novos episódios</li>
+        <li>Comunidade exclusiva no Discord</li>
+      </ul>
+      <button class="btn btn-primary" onclick="openModal('Plano Anual', 'Você selecionou o plano anual com 40% de desconto. No app real, aqui inicia o checkout do Stripe.')">Assinar agora</button>
+    </div>
+
+    <div class="pricing-card reveal">
+      <div class="plan-name">Família</div>
+      <div class="plan-desc">Compartilhe com até 4 pessoas</div>
+      <div class="plan-price">
+        <span class="currency">R$</span>
+        <span class="amount">24</span>
+        <span class="period">,90/mês</span>
+      </div>
+      <ul class="plan-features">
+        <li>Tudo do plano Anual</li>
+        <li>4 telas simultâneas</li>
+        <li>Perfis individuais</li>
+        <li>Modo infantil com controle parental</li>
+        <li>Suporte VIP</li>
+      </ul>
+      <button class="btn btn-ghost" onclick="openModal('Plano Família', 'Você selecionou o plano família com 4 perfis. No app real, aqui inicia o checkout do Stripe.')">Começar agora</button>
+    </div>
+  </div>
+</section>
+
+<section class="compare">
+  <h2 class="section-title reveal">Por que ter um app próprio?</h2>
+  <p class="section-subtitle reveal">Comparativo entre o nosso app e o sistema de Membership do YouTube.</p>
+
+  <div class="compare-table reveal">
+    <div class="compare-row header">
+      <div class="col-feature">Recurso</div>
+      <div class="col-app">Histórias Eternas+</div>
+      <div class="col-yt">YouTube Members</div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">Sem comissão de 30% das lojas</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">Pagamento via Stripe (cartão + Pix)</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">Controle total dos dados dos assinantes</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">App próprio (Android e iOS)</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">Sem algoritmo limitando alcance</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">Vídeos protegidos contra pirataria</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+    <div class="compare-row">
+      <div class="col-feature">Receita 90%+ vai para o criador</div>
+      <div class="col-app"><span class="yes">✓</span></div>
+      <div class="col-yt"><span class="no">✕</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap" class="roadmap">
+  <h2 class="section-title reveal">Roadmap de Lançamento</h2>
+  <p class="section-subtitle reveal">Cronograma realista das fases até o lançamento na Play Store e App Store.</p>
+
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-dot">1</div>
+      <div class="timeline-content">
+        <h4>Fase 1 — MVP Web (4 a 6 semanas)</h4>
+        <p>Site responsivo + checkout Stripe + área de membros + player de vídeo via Bunny Stream. Já permite começar a captar assinantes pagantes.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot">2</div>
+      <div class="timeline-content">
+        <h4>Fase 2 — App Android (3 a 5 semanas)</h4>
+        <p>Versão TWA (Trusted Web Activity) ou app React Native nativo. Login, catálogo, player nativo com Chromecast. Publicação na Play Store.</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot">3</div>
+      <div class="timeline-content">
+        <h4>Fase 3 — App iOS (3 a 4 semanas)</h4>
+        <p>Mesmo código React Native compilado para iOS. Publicação na App Store como "Reader App" (sem cobrar dentro do app).</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot">4</div>
+      <div class="timeline-content">
+        <h4>Fase 4 — Smart TV e Recursos Avançados (contínuo)</h4>
+        <p>App para Android TV, Chromecast nativo, AirPlay, downloads offline, perfis de família, modo infantil, comunidade Discord exclusiva.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <h2 class="reveal">Pronto para começar?</h2>
+  <p class="reveal">Esta é uma proposta visual. Após aprovação, iniciamos o desenvolvimento real seguindo o roadmap acima.</p>
+  <div class="cta-group reveal" style="justify-content:center;">
+    <button class="btn btn-primary btn-large" onclick="openModal('Aprovar Projeto','Após aprovação, iniciaremos a Fase 1 (MVP Web). Tempo total estimado até iOS publicado: 3 a 4 meses.')">Aprovar e Iniciar Desenvolvimento</button>
+    <button class="btn btn-ghost btn-large" onclick="window.print()">Imprimir Apresentação</button>
+  </div>
+</section>
+
+<footer>
+  © 2026 Histórias Eternas+ · Apresentação visual feita para validação com parceiro · Não é o produto final.
+</footer>
+
+<div class="modal-bg" id="modal" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Título</h3>
+    <p id="modal-text">Texto</p>
+    <button class="modal-close" onclick="closeModal()">Fechar</button>
+  </div>
+</div>
+
+<script>
+  function openModal(title, text) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-text').textContent = text;
+    document.getElementById('modal').classList.add('active');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+  }
+  function openVideo(title) {
+    openModal(title, 'Esta é uma simulação. No app real, este card abre o player de vídeo em tela cheia (Bunny Stream / Mux) com o episódio.');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  window.addEventListener('scroll', () => {
+    const h = document.querySelector('header');
+    if (window.scrollY > 50) {
+      h.style.background = 'rgba(10,10,20,0.95)';
+      h.style.padding = '12px 6%';
+    } else {
+      h.style.background = 'rgba(10,10,20,0.85)';
+      h.style.padding = '18px 6%';
+    }
+  });
+</script>
+
+</body>
+</html>
